@@ -6,7 +6,7 @@ namespace Worker
 {
     interface IWorker
     {
-        public void AddWorkTime(DateTime worktime);
+        public void AddWorkTime(DateTime workTime, int worktime);
         public void Show();
     }
 }

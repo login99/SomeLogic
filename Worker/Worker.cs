@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.VisualBasic;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Worker
@@ -10,25 +12,33 @@ namespace Worker
 
         protected internal event WorkerStateHandler Calculated;
 
-        static int counter = 0;
-        protected int days = 0;
+        protected internal event WorkerStateHandler AddedWorker;
 
-        public DateTime WorkTime { get; private set; }
-        //Basic salery for worker
+        protected internal event WorkerStateHandler Showed;
+
+        protected int days = 0;
+        //protected enum status 
+        //{   manager, 
+        //    employee,
+        //    freeLancer
+        //};
+
+        protected List<ModelWorker> User { get; private set; }
         public decimal Salery { get; private set; }
         //Prize for worker
-        public int Prize { get; private set; }
+        public double Prize { get; private set; }
 
-        public int Id { get; private set; }
-        public Worker(decimal sal, int pr)
+        public string Name { get; private set; }
+        public Worker(decimal sal, int pr, string name, List<ModelWorker> user)
         {
+            Name = name;
             Salery = sal;
             Prize = pr;
-            Id = ++counter;
+            User = user;
         }
 
 
-        private void CallEvent(WorkerEventArgs e, WorkerStateHandler handler)
+        protected void CallEvent(WorkerEventArgs e, WorkerStateHandler handler)
         {
             if (e != null)
                 handler?.Invoke(this, e);
@@ -42,11 +52,47 @@ namespace Worker
         {
             CallEvent(e, Calculated);
         }
-
-        public virtual void AddWorkTime( DateTime dateTime)
+        protected virtual void OnAddedWorker(WorkerEventArgs e)
         {
-            if(WorkTime.AddHours(dateTime.Hour) <= 24)
+            CallEvent(e, AddedWorker);
+        }
 
+        protected virtual void OnShowed(WorkerEventArgs e)
+        {
+            CallEvent(e, Showed);
+        }
+
+        public virtual void AddWorkTime(DateTime date, int dateTime)
+        {
+            var temp = User.Where(t => t.WorkTime.ToString("dd:MM:yyyy") == date.ToString("dd:MM:yyyy"));
+            foreach (ModelWorker t in temp)
+            {
+                if (t.NumberOfHourse+dateTime < 24)
+                {
+                    t.NumberOfHourse += dateTime;
+                    OnAddedHourse(new WorkerEventArgs($"Додано робочих годин: {dateTime}", dateTime, Name, Salery)); ;
+                }
+            }
+            
+        }
+        public virtual void Calculate()
+        {
+            decimal a = Salery;
+            var temp = User.Select(t => t.NumberOfHourse);
+            foreach(var t in temp)
+                Salery += (decimal)((t - 8) * Prize);
+            OnCalculated(new WorkerEventArgs($"Нараховано премію в розмірі{Salery - a}",8,Name,Salery));
+        }
+
+        public virtual void AddWorker()
+        {
+            OnAddedWorker(new WorkerEventArgs("Створено робочого чєліка", 8, Name, Salery));
+        }
+        public void Show()
+        {
+            foreach(var t in User)
+            Console.WriteLine($"{t.WorkTime.ToString("dd:MM:yyyy")} {t.NumberOfHourse} {t.Message}");
+            OnShowed(new WorkerEventArgs("Вся інфа про даного раба", 8, Name, Salery));
         }
     }
 }
