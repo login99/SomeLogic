@@ -55,6 +55,29 @@ namespace Разработка_софта
             Console.WriteLine("Вкажіть статуc раба: ");
             Console.WriteLine("Menager \t Employee \t Freelancer");
             string status = Console.ReadLine();
+            bool correctStatus = true;
+            Status st = Status.Employee;
+            while (correctStatus)
+            {
+                if (status == "Menager")
+                { 
+                    st = Status.Manager;
+                    correctStatus = false;
+                }
+                else if (status == "Employee")
+                {
+                    st = Status.Employee;
+                    correctStatus = false;
+                }
+                else if (status == "FreeLancer")
+                {
+                    st = Status.FreeLancer;
+                    correctStatus = false;
+                }
+                else { Console.WriteLine("Введи блять нормільний статус");
+                    status = Console.ReadLine();
+                }
+            }
             Console.WriteLine("Вкажіть зарплату раба: ");
             int sal = Convert.ToInt32(Console.ReadLine());
             Console.WriteLine("Вкажіть ім'я для раба: ");
@@ -62,14 +85,7 @@ namespace Разработка_софта
             Console.WriteLine("Вкажіть премію для раба: ");
             int pr = Convert.ToInt32(Console.ReadLine());
 
-            Status st = Status.Employee;
-            if (status == "Menager")
-                st = Status.Manager;
-            else if (status == "Employee")
-                st = Status.Employee;
-            else if (status == "FreeLancer")
-                st = Status.FreeLancer;
-            else Console.WriteLine("Введи блять нормільний статус");
+            
 
             job.Hiring(st, sal, pr, name,
                 addHourseWorkHandler, calcultionHandler, addNewWorkerJandler, showHandler);

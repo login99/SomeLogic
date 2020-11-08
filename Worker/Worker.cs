@@ -15,14 +15,6 @@ namespace Worker
         protected internal event WorkerStateHandler AddedWorker;
 
         protected internal event WorkerStateHandler Showed;
-
-        protected int days = 0;
-        //protected enum status 
-        //{   manager, 
-        //    employee,
-        //    freeLancer
-        //};
-
         protected List<ModelWorker> User { get; private set; }
         public decimal Salery { get; private set; }
         //Prize for worker
@@ -70,7 +62,7 @@ namespace Worker
                 if (t.NumberOfHourse+dateTime < 24)
                 {
                     t.NumberOfHourse += dateTime;
-                    OnAddedHourse(new WorkerEventArgs($"Додано робочих годин: {dateTime}", dateTime, Name, Salery)); ;
+                    OnAddedHourse(new WorkerEventArgs($"Додано робочих годин: {dateTime}", dateTime)); 
                 }
             }
             
@@ -81,18 +73,18 @@ namespace Worker
             var temp = User.Select(t => t.NumberOfHourse);
             foreach(var t in temp)
                 Salery += (decimal)((t - 8) * Prize);
-            OnCalculated(new WorkerEventArgs($"Нараховано премію в розмірі{Salery - a}",8,Name,Salery));
+            OnCalculated(new WorkerEventArgs($"Нараховано премію в розмірі{Salery - a}",8));
         }
 
         public virtual void AddWorker()
         {
-            OnAddedWorker(new WorkerEventArgs("Створено робочого чєліка", 8, Name, Salery));
+            OnAddedWorker(new WorkerEventArgs("Створено робочого чєліка", 8));
         }
         public void Show()
         {
             foreach(var t in User)
             Console.WriteLine($"{t.WorkTime.ToString("dd:MM:yyyy")} {t.NumberOfHourse} {t.Message}");
-            OnShowed(new WorkerEventArgs("Вся інфа про даного раба", 8, Name, Salery));
+            OnShowed(new WorkerEventArgs("Вся інфа про даного раба", 8));
         }
     }
 }
